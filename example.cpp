@@ -11,8 +11,8 @@ int main(int argc, char* argv[])
    cc.list_options();
    cc.list_parsed();
 
-   auto port = cc.get<std::string>("inputfile");
-   auto lol = cc.get<std::string>("outputfile");
+   auto port = cc.has("inputfile" ) ? cc.get<std::string>("inputfile")  : "DEFAULT";
+   auto lol  = cc.has("outputfile") ? cc.get<std::string>("outputfile") : "DEFAULTLOL";
    std::cout << port << " " << lol << std::endl;
 
    return 0;

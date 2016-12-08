@@ -37,7 +37,10 @@ namespace commandline
       os << t.name();
       return os;
    }
-
+   
+   /*!
+    *
+    */
    struct parser_option
    {
       parser_option
@@ -62,6 +65,9 @@ namespace commandline
       return os;
    }
    
+   /*!
+    *
+    */
    struct parser_value
    {
       std::vector<std::type_index> type_;
@@ -74,6 +80,9 @@ namespace commandline
       return os;
    }
 
+   /*!
+    *
+    */
    struct parser_type
    {
       int minarg_ = 0;
@@ -101,7 +110,7 @@ namespace commandline
       template<class T>
       T get
          ( const std::string& name
-         , int iarg = 0
+         , std::size_t iarg = 0
          )
       {
          auto val = parsed_.find(name);
@@ -116,7 +125,21 @@ namespace commandline
          
          return from_string<T>(val->second.value_[iarg]);
       }
-      
+
+      //!
+      bool has
+         ( const std::string& name
+         , std::size_t iarg = 0
+         )
+      {
+         auto val = parsed_.find(name);
+         if(val == parsed_.end())
+         {
+            return false;
+         }
+         return true;
+      }
+
       //! parse the commandline input
       parser_type& parse(int argc, char* argv[])
       {
@@ -127,21 +150,29 @@ namespace commandline
             {
                if(argv[iargc] == option.option_)
                {
-                  ++iargc;
                   found = true;
                   auto narg = option.type_.size();
                   parser_value val;
-                  for(int i = 0; i < narg; ++i)
+                  for(std::size_t i = 0; i < narg; ++i)
                   {
+                     ++iargc;
+                     for(const auto option_check : options_)
+                     {
+                        if(argv[iargc] == option_check.option_) throw std::runtime_error("passed another option to '" + option.option_ + "'.");
+                     }
                      val.type_.emplace_back(option.type_[i]);
                      val.value_.emplace_back(argv[iargc]);
                   }
                   parsed_.emplace(option.name_, val);
+                  break;
                }
             }
             if(!found)
+            {
                std::cout << " did not find option " << argv[iargc] << std::endl;
+            }
          }
+         //auto val = parsed_.find("help");
          return *this;
       }
       
