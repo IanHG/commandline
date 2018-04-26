@@ -98,8 +98,8 @@ namespace commandline
       //! add parser option
       template<class... T>
       parser_type& option
-         ( const std::string& name
-         , const std::string& option
+         (  const std::string& name
+         ,  const std::string& option
          )
       {
          options_.emplace_back(parser_option(name, option, {std::type_index(typeid(T))...}));
